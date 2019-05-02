@@ -54,7 +54,11 @@ docker run -i -t --rm \
 ```
 
 
-##### Notes
+
+----------------------------------------
+#### Usage
+
+* Run docker container and login.
     - Default user name : forumi0721
 
 

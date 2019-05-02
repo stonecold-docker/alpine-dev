@@ -2,6 +2,13 @@
 
 set -e
 
+DOCKER_ARCH=
+case "$(uname -m)" in
+	x86_64)  DOCKER_ARCH="x64" ;;
+	aarch64) DOCKER_ARCH="aarch64" ;;
+	armv7l)  DOCKER_ARCH="armhf" ;;
+esac
+
 BASE_PACKAGES="alpine-conf bash bash-completion alpine-sdk linux-headers bison flex vim diffutils file lsof openssh-client sudo autoconf automake libtool gdb bc ncurses ncurses-dev openssl openssl-dev xz elfutils elfutils-dev elfutils-libelf squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi grep less e2fsprogs btrfs-progs wget ca-certificates arch-install-scripts debootstrap"
 
 if [ "${DOCKER_ARCH}" = "x64" ]; then
