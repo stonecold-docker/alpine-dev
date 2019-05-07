@@ -15,7 +15,7 @@ if [ "${DOCKER_ARCH}" = "x64" ]; then
 	BASE_PACKAGES="${BASE_PACKAGES} syslinux"
 fi
 
-docker-install -r -u -c ${BASE_PACKAGES}
+docker-install -r -u -c su-exec ${BASE_PACKAGES}
 
 rm -rf /build
 mkdir -p /build
