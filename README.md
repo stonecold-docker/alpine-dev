@@ -13,7 +13,7 @@
 #### Description
 
 * Distribution : [Alpine Linux](https://alpinelinux.org/)
-* Architecture : x64
+* Architecture : x64,aarch64,armhf
 * Appplication : -
     - Development environment
 * Base Image
