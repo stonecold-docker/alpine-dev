@@ -22,6 +22,8 @@ mkdir -p /build
 
 mkdir -p /build/glibc
 cd /build/glibc
+#DEBIAN_MIRROR=http://ftp.kr.debian.org/debian
+DEBIAN_MIRROR=http://mirror.kakao.com/debian
 DEBIAN_ARH=
 if [ "${DOCKER_ARCH}" = "x64" ]; then
 	DEBIAN_ARCH=amd64
@@ -30,12 +32,12 @@ elif [ "${DOCKER_ARCH}" = "armhf" ]; then
 elif [ "${DOCKER_ARCH}" = "aarch64" ]; then
 	DEBIAN_ARCH=arm64
 fi
-wget --no-check-certificate http://ftp.kr.debian.org/debian/dists/sid/main/binary-${DEBIAN_ARCH}/Packages.gz -q
+wget --no-check-certificate ${DEBIAN_MIRROR}/dists/sid/main/binary-${DEBIAN_ARCH}/Packages.gz -q
 
 for x in libc-bin libc-dev-bin libc-l10n libc6 libc6-dev locales
 do
 	echo ${x}
-	wget --no-check-certificate "$(zcat Packages.gz | grep "Filename: pool/main/g/glibc/${x}_.*.deb" | sed -e "s@^.*Filename: @http://ftp.kr.debian.org/debian/\1@g")" -q
+	wget --no-check-certificate "$(zcat Packages.gz | grep "Filename: pool/main/g/glibc/${x}_.*.deb" | sed -e "s@^.*Filename: @${DEBIAN_MIRROR}/\1@g")" -q
 	ar -xf ${x}*.deb
 	tar Jxf data.tar.xz
 	rm -rf ${x}*.deb debian-binary control.tar.xz data.tar.xz
