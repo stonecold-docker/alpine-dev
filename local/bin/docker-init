@@ -23,7 +23,7 @@ mkdir -p /build
 mkdir -p /build/glibc
 cd /build/glibc
 #DEBIAN_MIRROR=http://ftp.kr.debian.org/debian
-DEBIAN_MIRROR=http://mirror.kakao.com/debian
+DEBIAN_MIRROR=http://ftp.lanet.kr/debian
 DEBIAN_ARH=
 if [ "${DOCKER_ARCH}" = "x64" ]; then
 	DEBIAN_ARCH=amd64
