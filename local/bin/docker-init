@@ -15,6 +15,9 @@ if [ "${DOCKER_ARCH}" = "x64" ]; then
 	BASE_PACKAGES="${BASE_PACKAGES} syslinux android-tools"
 fi
 
+#Ignore pacman-bash-completion
+apk add --nocache --virtual pacman-bash-completion
+
 docker-install -r -u -c su-exec ${BASE_PACKAGES}
 
 rm -rf /build
