@@ -2,114 +2,128 @@
 
 set -e
 
-DOCKER_ARCH=
-case "$(uname -m)" in
-	x86_64)  DOCKER_ARCH="x64" ;;
-	aarch64) DOCKER_ARCH="aarch64" ;;
-	armv7l)  DOCKER_ARCH="armhf" ;;
-esac
-
-BASE_PACKAGES="alpine-conf bash bash-completion alpine-sdk linux-headers bison flex vim diffutils file lsof openssh-client sudo autoconf automake libtool gdb bc ncurses ncurses-dev openssl openssl-dev xz elfutils elfutils-dev elfutils-libelf squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi grep less e2fsprogs btrfs-progs wget ca-certificates arch-install-scripts debootstrap"
-
-if [ "${DOCKER_ARCH}" = "x64" ]; then
-	BASE_PACKAGES="${BASE_PACKAGES} syslinux android-tools"
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing required packages"
+PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmake bash grep wget python2 python2-dev python3 python3-dev py3-virtualenv"
+PKG_LIB="${PKG_LIB} vim file less lsof openssh-client sudo zstd gdb bc bison flex ncurses openssl elfutils squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi e2fsprogs btrfs-progs"
+PKG_LIB="${PKG_LIB} debootstrap pacman"
+PKG_LIB="${PKG_LIB} su-exec"
+if [ "$(uname -m)" = "x64" ]; then
+	PKG_LIB="${PKG_LIB} syslinux android-tools"
 fi
+PKG_DEV=""
+apk add --virtual pacman-bash-completion
+docker-install -r -u ${PKG_LIB} ${PKG_DEV}
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
+echo
 
-#Ignore pacman-bash-completion
-apk add --nocache --virtual pacman-bash-completion
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing pip2"
+apk add --virtual py2-pip
+apk add --virtual py2-setuptools
+wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python2
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
+echo
 
-docker-install -r -u -c su-exec ${BASE_PACKAGES}
-
-rm -rf /build
-mkdir -p /build
-
-mkdir -p /build/glibc
-cd /build/glibc
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing glibc"
 #DEBIAN_MIRROR=http://ftp.kr.debian.org/debian
 DEBIAN_MIRROR=http://ftp.lanet.kr/debian
 DEBIAN_ARH=
-if [ "${DOCKER_ARCH}" = "x64" ]; then
-	DEBIAN_ARCH=amd64
-elif [ "${DOCKER_ARCH}" = "armhf" ]; then
-	DEBIAN_ARCH=armhf
-elif [ "${DOCKER_ARCH}" = "aarch64" ]; then
-	DEBIAN_ARCH=arm64
-fi
-wget --no-check-certificate ${DEBIAN_MIRROR}/dists/sid/main/binary-${DEBIAN_ARCH}/Packages.gz -q
+LIB_NAME=
+LD_NAME=
+LD_FULL_PATH=
+case "$(uname -m)" in
+	x86_64)
+		DEBIAN_ARCH=amd64
+		LIB_NAME=x86_64-linux-gnu
+		LD_NAME=ld-linux-x86-64.so.2
+		LD_FULL_PATH=/lib64/${LD_NAME}
+		;;
+	aarch64)
+		DEBIAN_ARCH=arm64
+		LIB_NAME=aarch64-linux-gnu
+		LD_NAME=ld-linux-aarch64.so.1
+		LD_FULL_PATH=/lib/${LD_NAME}
+		;;
+	armv7l)
+		DEBIAN_ARCH=armhf
+		LIB_NAME=arm-linux-gnueabihf
+		LD_NAME=ld-linux-armhf.so.3
+		LD_FULL_PATH=/lib/${LD_NAME}
+		;;
+esac
 
-for x in libc-bin libc-dev-bin libc-l10n libc6 libc6-dev locales
+mkdir -p /build
+cd /build
+
+wget --no-check-certificate -q ${DEBIAN_MIRROR}/dists/stable/main/binary-${DEBIAN_ARCH}/Packages.gz
+
+for x in libc6:glibc libgcc1:gcc libstdc++6:gcc libc-bin:glibc locales:glibc
 do
 	echo ${x}
-	wget --no-check-certificate "$(zcat Packages.gz | grep "Filename: pool/main/g/glibc/${x}_.*.deb" | sed -e "s@^.*Filename: @${DEBIAN_MIRROR}/\1@g")" -q
-	ar -xf ${x}*.deb
-	tar Jxf data.tar.xz
-	rm -rf ${x}*.deb debian-binary control.tar.xz data.tar.xz
-done
-mkdir -p usr/inc
-mv usr/include usr/inc/glibc
-mv usr/inc usr/include
-rm -rf Packages.gz
-
-find . -type f -or -type l | while read -r f
-do
-	dir="$(dirname ${f})"
-	mkdir -p /${dir}
-	if [ ! -e /${f} ]; then
-		cp -a ${f} /${dir}/
-	else
-		echo "Alread exists ${f}"
-		#cp -a ${f} /${dir}/$(basename "${f}")_glibc
-	fi
+	x1=$(echo ${x} | cut -d ':' -f 1)
+	x2=$(echo ${x} | cut -d ':' -f 2)
+	mkdir -p "${x1}"
+	cd "${x1}"
+	wget --no-check-certificate -q "$(zcat ../Packages.gz | grep "Filename: pool/main/g/${x2}.*/${x1}_.*.deb" | sed -e "s@^.*Filename: @${DEBIAN_MIRROR}/\1@g")"
+	ar -xf *.deb
+	tar Jxf data.tar.xz || tar zxf data.tar.gz
+	rm -rf *.deb debian-binary control.* data.*
+	cd ..
 done
 
+mkdir -p /lib/glibc
+cp -ar libc6/lib/${LIB_NAME}/* /lib/glibc/
+cp -ar libgcc1/lib/${LIB_NAME}/* /lib/glibc/
+cp -ar libstdc++6/usr/lib/${LIB_NAME}/* /lib/glibc/
+
+case "$(uname -m)" in
+	x86_64)
+		mkdir -p /lib64
+		ln -s /lib/glibc/${LD_NAME} /lib64/${LD_NAME}
+		;;
+	aarch64)
+		ln -s /lib/glibc/${LD_NAME} /lib/${LD_NAME}
+		;;
+	armv7l)
+		ln -s /lib/glibc/${LD_NAME} /lib/${LD_NAME}
+		;;
+esac
+
+mkdir -p /usr/share/i18n/charmaps /usr/share/i18n/locales /usr/lib/locale
+cp -ar /build/locales/usr/share/i18n/charmaps/UTF-8.gz /usr/share/i18n/charmaps/
+cp -ar /build/locales/usr/share/i18n/locales/en_US /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/en_GB /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/i18n /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/i18n_ctype /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/iso14651_t1 /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/iso14651_t1_common /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_neutral /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_combining /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_circle /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_cjk_compat /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_compat /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_font /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_fraction /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_narrow /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_small /usr/share/i18n/locales/
+cp -ar /build/locales/usr/share/i18n/locales/translit_wide /usr/share/i18n/locales/
+LD_LIBRARY_PATH=/lib/glibc /build/libc-bin/usr/bin/localedef -c -f UTF-8 -i en_US en_US.UTF-8
 cd /
-
 rm -rf /build
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
+echo
 
-if [ "${DOCKER_ARCH}" = "aarch64" -o "${DOCKER_ARCH}" = "armhf" ]; then
-	qemu=
-	if [ "${DOCKER_ARCH}" = "aarch64" ]; then
-		qemu=qemu-aarch64-static
-	elif [ "${DOCKER_ARCH}" = "armhf" ]; then
-		qemu=qemu-arm-static
-	fi
-	if [ ! -z "${qemu}" -a -e /usr/bin/${qemu} ]; then
-		cp /usr/bin/${qemu} /usr/local/bin/
-		chmod 4755 /usr/local/bin/${qemu}
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Uninstalling unnecessary packages"
+docker-install -d -c ${PKG_DEV}
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
+echo
 
-		cat << EOF > /usr/local/bin/sudo
-#!/bin/sh
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Setting basic configurations"
 
-qemu=/usr/local/bin/${qemu}
-sudo=/usr/bin/sudo
-
-if grep -q -w lm /proc/cpuinfo ; then
-	if [ "\$(basename "\${0}")" = "sudoedit" ]; then
-		\${qemu} -execve -0 /bin/sh \${sudo} -e "\${@}"
-	else
-		\${qemu} -execve -0 /bin/sh \${sudo} "\${@}"
-	fi
-else
-	if [ "\$(basename "\${0}")" = "sudoedit" ]; then
-		\${sudo} -e "\${@}"
-	else
-		\${sudo} "\${@}"
-	fi
-fi
-
-exit \$?
-EOF
-		chmod 4755 /usr/local/bin/sudo
-		ln -s sudo /usr/local/bin/sudoedit
-	fi
-fi
-
+echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
 sed -i -e "s@^\(root:.*\):/bin/ash\$@\1:/bin/bash@g" /etc/passwd
-
 sed -i -e 's/$(id -u) -eq 0/$(id -u) -eq -1/g' /usr/bin/abuild
-
 ln -s /usr/bin/vim /usr/local/bin/vi
-
 mkdir -p /etc/sudoers.d
 ln -sf /usr/local/etc/sudoers /etc/sudoers.d/sudoers
+echo
 
