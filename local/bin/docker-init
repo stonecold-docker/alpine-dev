@@ -7,7 +7,7 @@ PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmak
 PKG_LIB="${PKG_LIB} vim file less lsof openssh-client sudo zstd gdb bc bison flex ncurses openssl elfutils squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi e2fsprogs btrfs-progs"
 PKG_LIB="${PKG_LIB} debootstrap pacman"
 PKG_LIB="${PKG_LIB} su-exec"
-if [ "$(uname -m)" = "x64" ]; then
+if [ "$(uname -m)" = "x86_64" ]; then
 	PKG_LIB="${PKG_LIB} syslinux android-tools"
 fi
 PKG_DEV=""
