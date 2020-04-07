@@ -20,6 +20,9 @@ echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing pip2"
 apk add --virtual py2-pip
 apk add --virtual py2-setuptools
 wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python2
+apk add --virtual py3-pip
+apk add --virtual py3-setuptools
+wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python3
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
 echo
 
