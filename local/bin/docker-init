@@ -3,7 +3,7 @@
 set -e
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing required packages"
-PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmake bash grep gawk wget python2 python2-dev python3 python3-dev py3-virtualenv"
+PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmake bash grep gawk wget python2 python2-dev python3 python3-dev"
 PKG_LIB="${PKG_LIB} vim file less lsof openssh-client sudo zstd gdb bc bison flex ncurses openssl elfutils squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi e2fsprogs btrfs-progs"
 PKG_LIB="${PKG_LIB} debootstrap pacman"
 PKG_LIB="${PKG_LIB} su-exec"
@@ -17,12 +17,13 @@ echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
 echo
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing pip"
-apk add --virtual py2-pip
-apk add --virtual py2-setuptools
 wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python2
-apk add --virtual py3-pip
-apk add --virtual py3-setuptools
 wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python3
+pip3 install virtualenv -i http://ftp.daumkakao.com/pypi/simple --trusted-host ftp.daumkakao.com
+for pip in py2-pip py2-setuptools py2-wheel py3-pip py3-setuptools py3-wheel py3-filelock py3-six py3-distlib py3-appdirs py3-virtualenv
+do
+	apk add --virtual ${pip}
+done
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
 echo
 
