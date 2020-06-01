@@ -29,7 +29,8 @@ echo
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing glibc"
 #DEBIAN_MIRROR=http://ftp.kr.debian.org/debian
-DEBIAN_MIRROR=http://ftp.lanet.kr/debian
+#DEBIAN_MIRROR=http://ftp.lanet.kr/debian
+DEBIAN_MIRROR=http://ftp.harukasan.org/debian
 DEBIAN_ARH=
 LIB_NAME=
 LD_NAME=
