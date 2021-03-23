@@ -17,7 +17,7 @@ echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> OK"
 echo
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing pip"
-wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python2
+wget --no-check-certificate -q -O - https://bootstrap.pypa.io/pip/2.7/get-pip.py | python2
 wget --no-check-certificate -q -O - https://bootstrap.pypa.io/get-pip.py | python3
 pip3 install --no-cache-dir virtualenv
 for pip in py2-pip py2-setuptools py2-wheel py3-pip py3-setuptools py3-wheel py3-filelock py3-six py3-distlib py3-appdirs py3-virtualenv
