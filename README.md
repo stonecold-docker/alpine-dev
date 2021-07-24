@@ -1,23 +1,16 @@
 # alpine-dev
+![Docker Pulls](https://img.shields.io/docker/pulls/forumi0721/alpine-dev)
+![Docker Stars](https://img.shields.io/docker/stars/forumi0721/alpine-dev)
 
-#### [alpine-x64-dev](https://hub.docker.com/r/forumi0721alpinex64/alpine-x64-dev/)
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/forumi0721alpinex64/alpine-x64-dev/latest)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/forumi0721alpinex64/alpine-x64-dev/latest)
-![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/forumi0721alpinex64/alpine-x64-dev/latest)
-![Docker Pulls](https://img.shields.io/docker/pulls/forumi0721alpinex64/alpine-x64-dev)
-![Docker Stars](https://img.shields.io/docker/stars/forumi0721alpinex64/alpine-x64-dev)
-#### [alpine-aarch64-dev](https://hub.docker.com/r/forumi0721alpineaarch64/alpine-aarch64-dev/)
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/forumi0721alpineaarch64/alpine-aarch64-dev/latest)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/forumi0721alpineaarch64/alpine-aarch64-dev/latest)
-![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/forumi0721alpineaarch64/alpine-aarch64-dev/latest)
-![Docker Pulls](https://img.shields.io/docker/pulls/forumi0721alpineaarch64/alpine-aarch64-dev)
-![Docker Stars](https://img.shields.io/docker/stars/forumi0721alpineaarch64/alpine-aarch64-dev)
-#### [alpine-armhf-dev](https://hub.docker.com/r/forumi0721alpinearmhf/alpine-armhf-dev/)
-![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/forumi0721alpinearmhf/alpine-armhf-dev/latest)
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/forumi0721alpinearmhf/alpine-armhf-dev/latest)
-![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/forumi0721alpinearmhf/alpine-armhf-dev/latest)
-![Docker Pulls](https://img.shields.io/docker/pulls/forumi0721alpinearmhf/alpine-armhf-dev)
-![Docker Stars](https://img.shields.io/docker/stars/forumi0721alpinearmhf/alpine-armhf-dev)
+
+
+----------------------------------------
+### x64
+![Docker Image Version](https://img.shields.io/docker/v/forumi0721/alpine-dev/latest)
+![Docker Image Size](https://img.shields.io/docker/image-size/forumi0721/alpine-dev/latest)
+### aarch64
+![Docker Image Version](https://img.shields.io/docker/v/forumi0721/alpine-dev/aarch64)
+![Docker Image Size](https://img.shields.io/docker/image-size/forumi0721/alpine-dev/aarch64)
 
 
 
@@ -25,7 +18,7 @@
 #### Description
 
 * Distribution : [Alpine Linux](https://alpinelinux.org/)
-* Architecture : x64,aarch64,armhf
+* Architecture : x64,aarch64
 * Appplication : -
     - Development environment
 
@@ -39,7 +32,7 @@ docker run -i -t --rm \
            -e RUN_USER_NAME=<user_name> \
            -e RUN_USER_UID=<user_uid> \
            -e RUN_USER_GID=<user_gid> \
-           forumi0721alpine[ARCH]/alpine-[ARCH]-dev:latest
+           forumi0721/alpine-dev:[ARCH_TAG]
 ```
 
 
