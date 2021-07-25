@@ -1,4 +1,4 @@
-#ARG BUILD_TAG=latest
+#ARG BUILD_TAG=aarch64
 
 FROM --platform=linux/arm64 forumi0721/alpine-base:aarch64
 
