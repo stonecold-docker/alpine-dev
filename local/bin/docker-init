@@ -61,7 +61,7 @@ cd /build
 
 wget --no-check-certificate -q ${DEBIAN_MIRROR}/dists/stable/main/binary-${DEBIAN_ARCH}/Packages.gz
 
-for x in libc6:glibc libgcc1:gcc libstdc++6:gcc libc-bin:glibc locales:glibc
+for x in libc6:glibc libgcc-s1:gcc libstdc++6:gcc libc-bin:glibc locales:glibc
 do
 	echo ${x}
 	x1=$(echo ${x} | cut -d ':' -f 1)
@@ -77,7 +77,7 @@ done
 
 mkdir -p /lib/glibc
 cp -ar libc6/lib/${LIB_NAME}/* /lib/glibc/
-cp -ar libgcc1/lib/${LIB_NAME}/* /lib/glibc/
+cp -ar libgcc-s1/lib/${LIB_NAME}/* /lib/glibc/
 cp -ar libstdc++6/usr/lib/${LIB_NAME}/* /lib/glibc/
 
 case "$(uname -m)" in
