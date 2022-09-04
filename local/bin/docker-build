@@ -3,7 +3,7 @@
 set -e
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing required packages"
-PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmake bash grep gawk wget python3 python3-dev"
+PKG_LIB="alpine-sdk linux-headers patch diffutils autoconf automake libtool cmake bash grep gawk wget python3 python3-dev ncurses-dev"
 PKG_LIB="${PKG_LIB} vim file less lsof openssh-client sudo zstd gdb bc bison flex ncurses openssl elfutils squashfs-tools mkinitfs xorriso mtools dosfstools grub-efi e2fsprogs btrfs-progs"
 PKG_LIB="${PKG_LIB} debootstrap pacman"
 PKG_LIB="${PKG_LIB} su-exec"
