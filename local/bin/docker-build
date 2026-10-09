@@ -18,9 +18,6 @@ echo
 
 echo "[$(TZ="GMT-9" date '+%Y-%m-%d %H:%M:%S')] ==> Installing glibc"
 DEBIAN_MIRROR=http://ftp.kr.debian.org/debian
-#DEBIAN_MIRROR=http://ftp.lanet.kr/debian
-#DEBIAN_MIRROR=http://ftp.harukasan.org/debian
-#DEBIAN_MIRROR=http://mirror.anigil.com/debian
 DEBIAN_ARH=
 LIB_NAME=
 LD_NAME=
@@ -36,12 +33,6 @@ case "$(uname -m)" in
 		DEBIAN_ARCH=arm64
 		LIB_NAME=aarch64-linux-gnu
 		LD_NAME=ld-linux-aarch64.so.1
-		LD_FULL_PATH=/lib/${LD_NAME}
-		;;
-	armv7l)
-		DEBIAN_ARCH=armhf
-		LIB_NAME=arm-linux-gnueabihf
-		LD_NAME=ld-linux-armhf.so.3
 		LD_FULL_PATH=/lib/${LD_NAME}
 		;;
 esac
